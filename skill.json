@@ -1,125 +1,36 @@
-{
-	"manifest": {
-		"publishingInformation": {
-			"locales": {
-				"en-US": {
-					"name": "Hello World",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa open hello world", "hello", "help" ],
-					"keywords": []
-				},
-				"en-GB": {
-					"name": "Hello World",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa open hello world", "hello", "help" ],
-					"keywords": []
-				},
-				"en-CA": {
-					"name": "Hello World",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa open hello world", "hello", "help" ],
-					"keywords": []
-				},
-				"en-IN": {
-					"name": "Hello World",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa open hello world", "hello", "help" ],
-					"keywords": []
-				},
-				"en-AU": {
-					"name": "Hello World",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa open hello world", "hello", "help" ],
-					"keywords": []
-				},
-				"es-ES": {
-					"name": "Hola Mundo",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa abre hola mundo", "hola", "ayuda" ],
-					"keywords": []
-				},
-				"es-MX": {
-					"name": "Hola Mundo",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa abre hola mundo", "hola", "ayuda" ],
-					"keywords": []
-				},
-				"es-US": {
-					"name": "Hola Mundo",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa abre hola mundo", "hola", "ayuda" ],
-					"keywords": []
-				},
-				"fr-FR": {
-					"name": "Le Génie des Salutations",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa ouvre le génie des salutations", "bonjour", "aide" ],
-					"keywords": []
-				},
-				"fr-CA": {
-					"name": "Le Génie des Salutations",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa ouvre le génie des salutations", "bonjour", "aide" ],
-					"keywords": []
-				},
-				"ja-JP": {
-					"name": "ハローワールド",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "アレクサ、ハローワールドを開いて", "こんにちは", "ヘルプ" ],
-					"keywords": []
-				},
-				"de-DE": {
-					"name": "Hallo Welt",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa öffne hallo welt", "hallo", "hilfe" ],
-					"keywords": []
-				},
-				"it-IT": {
-					"name": "Ciao Mondo",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa apri ciao mondo", "ciao", "aiuto" ],
-					"keywords": []
-				},
-				"hi-IN": {
-					"name": "नमस्ते दुनिया",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa मज़ेदार नमस्ते दुनिया", "hello", "मदद करो" ],
-					"keywords": []
-				},
-				"pt-BR": {
-					"name": "Olá Mundo",
-					"summary": "Sample Short Description",
-					"description": "Sample Full Description",
-					"examplePhrases": [ "Alexa abra olá mundo", "olá", "ajuda" ],
-					"keywords": []
-				}
-			},
-			"isAvailableWorldwide": true,
-			"testingInstructions": "Sample Testing Instructions.",
-			"distributionCountries": []
-		},
-		"apis": {
-			"custom": {
-				"endpoint": {
-					"sourceDir": "lambda/py",
-					"uri": "ask-custom-helloworld-classes-default"
-				}
-			}
-		},
-		"manifestVersion": "1.0"
-	}
-}
+const Alexa = require('ask-sdk-core');
+
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+    },
+    handle(handlerInput) {
+        const speakOutput = 'Bienvenido a YouTube Skill. Dime el nombre del video que quieres reproducir.';
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
+            .getResponse();
+    }
+};
+
+const PlayYouTubeVideoIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlayYouTubeVideoIntent';
+    },
+    handle(handlerInput) {
+        const videoTitle = handlerInput.requestEnvelope.request.intent.slots.videoTitle.value;
+        const speakOutput = `Reproduciendo ${videoTitle} en tu dispositivo vinculado.`;
+        // Aquí se realizaría la integración con YouTube
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .getResponse();
+    }
+};
+
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        PlayYouTubeVideoIntentHandler
+    )
+    .lambda();
